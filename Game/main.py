@@ -9,6 +9,7 @@ FPS=pygame.time.Clock()
 
 screen=width, heigth= 800, 600
 #print(screen)# this is collection(tuple) it is unchanged
+
 BLACK=0,0,0
 RED=255,0,0
 WHITE=255,255,255
@@ -22,16 +23,16 @@ IMGS_PATH = 'D:\py\Game\goose'
 # ball=pygame.Surface((20, 20))
 # ball.fill(RED)
 player_images = [pygame.transform.scale(pygame.image.load(IMGS_PATH + '/' + file).convert_alpha(), (101, 48)) for file in listdir(IMGS_PATH)]
-#ball =pygame.transform.scale(pygame.image.load('D:\py\Game\player.png').convert_alpha(), (101, 48))                                                                                                                                                                                                                                                                                                                                     
-ball=player_images[0]
-ball_rect=ball.get_rect()
-ball_speed=5
+#ball =pygame.transform.scale(pygame.image.load('Game/img/player.png').convert_alpha(), (101, 48))                                                                                                                                                                                                                                                                                                                                     
+player=player_images[0]
+player_rect=player.get_rect()
+player_speed=5
 #ball_speed=[1,1]#changeable collection
 
 def create_enemy():
     # enemy=pygame.Surface((20, 20))
     # enemy.fill(WHITE)
-    enemy = pygame.transform.scale(pygame.image.load('Game/enemy.png').convert_alpha(), (92, 26) )
+    enemy = pygame.transform.scale(pygame.image.load('Game/img/enemy.png').convert_alpha(), (92, 26) )
     enemy_rect=pygame.Rect(width, random.randint(10, heigth-10), *enemy.get_size())
     enemy_speed=random.randint(2,5)
     return [enemy, enemy_rect, enemy_speed]
@@ -43,20 +44,19 @@ enemies=[]
 def create_bonus():
     # bonus=pygame.Surface((20, 20))
     # bonus.fill(YELLOW)
-    bonus = pygame.transform.scale(pygame.image.load('Game/bonus.png').convert_alpha(), (60,100))
+    bonus = pygame.transform.scale(pygame.image.load('Game/img/bonus.png').convert_alpha(), (60,100))
     bonus_rect=pygame.Rect( random.randint(10, width-10), 0, *bonus.get_size())
     bonus_speed=random.randint(2,5)
     return [bonus, bonus_rect, bonus_speed]
 
-bg =pygame.transform.scale(pygame.image.load('Game/g.png').convert(), screen)
-bgX=0
-bgX2=bg.get_width()
-bg_speed=3
-
-
 CREATE_BONUS=pygame.USEREVENT+2
 pygame.time.set_timer(CREATE_BONUS, 1500)
 bonuses=[]
+
+bg =pygame.transform.scale(pygame.image.load('Game/img/background.png').convert(), screen)
+bgX=0
+bgX2=bg.get_width()
+bg_speed=3
 
 CHANGE_IMG=pygame.USEREVENT+3
 pygame.time.set_timer(CHANGE_IMG, 125)
@@ -73,18 +73,20 @@ while is_working:
             is_working=False
         if event.type==CREATE_ENEMY:
             enemies.append(create_enemy())
-            #pygame.quit() викликається прграмою?
+            #pygame.quit()
         if event.type==CREATE_BONUS:
             bonuses.append(create_bonus())
         if event.type==CHANGE_IMG:
             img_index += 1
             if img_index == len(player_images):
                 img_index=0
-            ball=player_images[img_index]
+            player=player_images[img_index]
     
     pressed_keys=pygame.key.get_pressed()
+
     #main_surface.fill(BLACK)
     #main_surface.blit(bg, (0, 0))
+
     bgX -= bg_speed
     bgX2 -= bg_speed
     if bgX < -bg.get_width():
@@ -96,8 +98,10 @@ while is_working:
     main_surface.blit(bg, (bgX,0))
     main_surface.blit(bg, (bgX2,0))
     
-    main_surface.blit(ball,(ball_rect))#змінюємо координати для перемальовування м'яча
+    main_surface.blit(player,(player_rect))
+
     main_surface.blit(font.render(str(scores), True, BLACK), (width-60, 0))
+
     for enemy in enemies:
         enemy[1]=enemy[1].move(-enemy[2], 0)
         main_surface.blit(enemy[0], enemy[1])
@@ -105,7 +109,7 @@ while is_working:
         if enemy[1].left<0:
             enemies.pop(enemies.index(enemy))
         
-        if ball_rect.colliderect(enemy[1]):
+        if player_rect.colliderect(enemy[1]):
             is_working=False
             #enemies.pop(enemies.index(enemy))
 
@@ -116,19 +120,19 @@ while is_working:
         if bonus[1].bottom>heigth:
             bonuses.pop(bonuses.index(bonus))
 
-        if ball_rect.colliderect(bonus[1]):
+        if player_rect.colliderect(bonus[1]):
             bonuses.pop(bonuses.index(bonus))
             scores += 1
         
 
-    if pressed_keys[K_DOWN] and not ball_rect.bottom>=heigth:
-        ball_rect=ball_rect.move(0, ball_speed)
-    if pressed_keys[K_UP] and not ball_rect.top<=0:
-        ball_rect=ball_rect.move(0, -ball_speed)
-    if pressed_keys[K_RIGHT] and not ball_rect.right>=width:
-        ball_rect=ball_rect.move(ball_speed, 0)
-    if pressed_keys[K_LEFT] and not ball_rect.left<=0:
-        ball_rect=ball_rect.move( -ball_speed, 0)
+    if pressed_keys[K_DOWN] and not player_rect.bottom>=heigth:
+        player_rect=player_rect.move(0, player_speed)
+    if pressed_keys[K_UP] and not player_rect.top<=0:
+        player_rect=player_rect.move(0, -player_speed)
+    if pressed_keys[K_RIGHT] and not player_rect.right>=width:
+        player_rect=player_rect.move(player_speed, 0)
+    if pressed_keys[K_LEFT] and not player_rect.left<=0:
+        player_rect=player_rect.move( -player_speed, 0)
 
     pygame.display.flip()#update our screen  
 
