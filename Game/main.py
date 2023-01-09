@@ -1,5 +1,6 @@
 import pygame
 import random 
+from os import listdir
 from pygame.constants import QUIT, K_DOWN, K_UP, K_LEFT, K_RIGHT #константи числа
 
 pygame.init()
@@ -12,12 +13,17 @@ BLACK=0,0,0
 RED=255,0,0
 WHITE=255,255,255
 YELLOW=255, 255, 0
+
 font=pygame.font.SysFont("Verdana", 30)
+
 main_surface=pygame.display.set_mode(screen)
 
+IMGS_PATH = 'D:\py\Game\goose' 
 # ball=pygame.Surface((20, 20))
 # ball.fill(RED)
-ball =pygame.transform.scale(pygame.image.load('D:\py\Game\player.png').convert_alpha(), (101, 48))                                                                                                                                                                                                                                                                                                                                     
+player_images = [pygame.transform.scale(pygame.image.load(IMGS_PATH + '/' + file).convert_alpha(), (101, 48)) for file in listdir(IMGS_PATH)]
+#ball =pygame.transform.scale(pygame.image.load('D:\py\Game\player.png').convert_alpha(), (101, 48))                                                                                                                                                                                                                                                                                                                                     
+ball=player_images[0]
 ball_rect=ball.get_rect()
 ball_speed=5
 #ball_speed=[1,1]#changeable collection
@@ -52,6 +58,9 @@ CREATE_BONUS=pygame.USEREVENT+2
 pygame.time.set_timer(CREATE_BONUS, 1500)
 bonuses=[]
 
+CHANGE_IMG=pygame.USEREVENT+3
+pygame.time.set_timer(CHANGE_IMG, 125)
+img_index = 0
 scores=0
 is_working=True
 
@@ -67,6 +76,11 @@ while is_working:
             #pygame.quit() викликається прграмою?
         if event.type==CREATE_BONUS:
             bonuses.append(create_bonus())
+        if event.type==CHANGE_IMG:
+            img_index += 1
+            if img_index == len(player_images):
+                img_index=0
+            ball=player_images[img_index]
     
     pressed_keys=pygame.key.get_pressed()
     #main_surface.fill(BLACK)
